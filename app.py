@@ -35,14 +35,23 @@ def chat_wrapper(message: str, history: list) -> str:
     return asyncio.run(chat(message, history))
 
 
-# Create Gradio interface
+# Header with CCAD logo
+header_html = """
+<div style="text-align: center; padding: 15px; background: linear-gradient(to right, #0066b3, #009b4d); border-radius: 8px; margin-bottom: 10px;">
+    <img src="https://www.clevelandclinicabudhabi.ae/-/media/images/header-images/cleveland-clinic-abu-dhabi-logo.svg" 
+         alt="Cleveland Clinic Abu Dhabi" 
+         style="max-width: 350px; height: auto; filter: brightness(0) invert(1);"/>
+</div>
+"""
+
 demo = gr.ChatInterface(
     fn=chat_wrapper,
-    title="🏥 Clinic Scheduler Agent",
+    title="Cleveland Clinic Abu Dhabi - AI Assistant",
     description=(
-        "Ask me about:\n"
-        "• 📋 **Information**: hours, doctors, insurance, services, location\n"
-        "• 📅 **Appointments**: check, book, cancel, reschedule"
+        header_html +
+        "**Ask me about:**\n\n"
+        "📋 **Information** - hours, doctors, insurance, services, location\n\n"
+        "📅 **Appointments** - check, book, cancel, reschedule"
     ),
     examples=[
         "What are your clinic hours?",
