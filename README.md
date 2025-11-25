@@ -5,6 +5,8 @@
 
 Multi-agent system for **Abu Dhabi Clinic** appointment scheduling using **Microsoft Agent Framework** and **Azure Foundry**.
 
+![App UI](docs/app-ui.png)
+
 ## Architecture
 
 ```
