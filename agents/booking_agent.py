@@ -11,12 +11,13 @@ from typing import Annotated
 from uuid import uuid4
 from dotenv import load_dotenv
 from azure.identity import DefaultAzureCredential
-from agent_framework import ChatAgent
-from agent_framework.openai import OpenAIChatClient
 from pydantic import Field
 
-load_dotenv()
+from agent_framework import ChatAgent
+from agent_framework.openai import OpenAIChatClient
 
+
+load_dotenv()
 
 # =============================================================================
 # Tools - Functions that the LLM can call to manage appointments
