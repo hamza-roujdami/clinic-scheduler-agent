@@ -12,7 +12,7 @@ This repository demonstrates a Python implementation using:
 The same patterns are fully supported in .NET with the Microsoft Agent Framework.
 
 ---
-
+c
 ## 📚 Essential .NET Resources
 
 ### Getting Started
