@@ -1,0 +1,19 @@
+# Clinic Scheduler Agent - Core Dependencies
+# Install with: pip install -r requirements.txt --pre
+
+# Environment & Utilities
+python-dotenv>=1.0.0
+
+# Microsoft Agent Framework (Preview)
+agent-framework>=1.0.0b251114
+agent-framework-azure-ai>=1.0.0b251114
+
+# Azure Authentication & LLM Client
+azure-identity>=1.19.0
+openai>=1.50.0
+
+# Web UI
+gradio>=5.0.0
+
+# Optional: Azure AI Search (for production RAG)
+# azure-search-documents>=11.6.0
