@@ -130,3 +130,8 @@ requirements.txt         # Dependencies
 - [ ] Add conversation history/threading
 - [ ] Build WhatsApp interface
 - [ ] Deploy to production
+
+## Resources
+
+- [Microsoft Agent Framework Documentation](https://learn.microsoft.com/en-us/agent-framework/overview/agent-framework-overview)
+- [Microsoft Agent Framework GitHub](https://github.com/microsoft/agent-framework)
