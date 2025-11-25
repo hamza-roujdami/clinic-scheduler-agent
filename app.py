@@ -46,10 +46,10 @@ demo = gr.ChatInterface(
     ),
     examples=[
         "What are your clinic hours?",
-        "Do you accept Blue Cross insurance?",
-        "I need to see a cardiologist",
-        "Book an appointment with Dr. Smith",
-        "Do you accept Medicare and can I book for Monday?"
+        "Do you accept Daman insurance?",
+        "I need to see a cardiologist who speaks Arabic",
+        "Book an appointment with Dr. Al Blooshi",
+        "Do you accept ADNIC and can I book for Sunday?"
     ]
 )
 

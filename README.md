@@ -1,9 +1,9 @@
 # Clinic Scheduler Agent
 
 > **⚠️ Demo Purpose Only**  
-> This is a **proof-of-concept demonstration** showcasing multi-agent architecture with Microsoft Agent Framework and Azure Foundry. It is **not production-ready code** and uses mock data for testing purposes. For production deployment, replace mock implementations with real APIs, add proper error handling, security measures, and scalability considerations.
+> This is a **proof-of-concept demonstration** showcasing multi-agent architecture with Microsoft Agent Framework and Microsoft Foundry. It is **not production-ready code** and uses mock data for testing purposes. For production deployment, replace mock implementations with real APIs, add proper error handling, security measures, and scalability considerations.
 
-Multi-agent system for clinic appointment scheduling using **Microsoft Agent Framework** and **Azure Foundry**.
+Multi-agent system for **Cleveland Clinic Abu Dhabi** appointment scheduling using **Microsoft Agent Framework** and **Azure Foundry**.
 
 ## Architecture
 
@@ -72,10 +72,10 @@ Try these prompts in the web UI to see the routing in action:
 ### Simple Info Queries (→ RAG Agent only)
 ```
 What are your clinic hours?
-Do you accept Blue Cross insurance?
-I need to see a cardiologist who speaks Spanish
+Do you accept Daman insurance?
+I need to see a cardiologist who speaks Arabic
 What services do you offer?
-Where is your clinic located?
+Where is Cleveland Clinic Abu Dhabi located?
 ```
 
 ### Simple Booking Queries (→ Booking Agent only)
@@ -88,9 +88,9 @@ I need to reschedule my appointment
 
 ### Complex Queries (→ Both agents)
 ```
-Do you accept Medicare and can I book for Monday?
-I need a cardiologist, do you accept Aetna and can I schedule this week?
-What are your hours and book me with Dr. Garcia for Friday
+Do you accept ADNIC insurance and can I book for Sunday?
+I need a cardiologist, do you accept Daman and can I schedule this week?
+What are your hours and book me with Dr. Al Blooshi for Thursday
 ```
 
 ### Greeting (→ Welcome message)

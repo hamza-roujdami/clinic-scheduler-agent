@@ -21,72 +21,77 @@ load_dotenv()
 
 CLINIC_INFO_DB = {
     "hours": {
-        "weekday": "Monday - Friday: 8:00 AM - 6:00 PM",
-        "weekend": "Saturday: 9:00 AM - 2:00 PM, Sunday: Closed",
-        "holidays": "Closed on major holidays"
+        "weekday": "Sunday - Thursday: 8:00 AM - 8:00 PM",
+        "weekend": "Friday: 8:00 AM - 6:00 PM, Saturday: 8:00 AM - 4:00 PM",
+        "holidays": "Open on public holidays with modified hours"
     },
     "insurance": [
-        "Blue Cross Blue Shield",
-        "Aetna",
-        "UnitedHealthcare", 
-        "Cigna",
-        "Medicare",
-        "Medicaid"
+        "ADNIC (Abu Dhabi National Insurance Company)",
+        "Daman",
+        "AXA Gulf",
+        "Oman Insurance Company",
+        "MetLife Alico",
+        "Neuron (GlobeMed)",
+        "Nextcare",
+        "Cigna International"
     ],
     "doctors": [
         {
-            "name": "Dr. Sarah Smith",
+            "name": "Dr. Khalid Al Blooshi",
             "specialty": "Cardiology",
-            "experience": "15 years",
-            "languages": ["English", "Spanish"],
-            "accepting_new_patients": True
-        },
-        {
-            "name": "Dr. John Chen",
-            "specialty": "Pediatrics",
-            "experience": "12 years",
-            "languages": ["English", "Mandarin"],
-            "accepting_new_patients": True
-        },
-        {
-            "name": "Dr. Maria Garcia",
-            "specialty": "Family Medicine",
-            "experience": "20 years",
-            "languages": ["English", "Spanish", "Portuguese"],
-            "accepting_new_patients": True
-        },
-        {
-            "name": "Dr. Ahmed Hassan",
-            "specialty": "Internal Medicine",
-            "experience": "8 years",
+            "experience": "18 years",
             "languages": ["English", "Arabic"],
-            "accepting_new_patients": False
+            "accepting_new_patients": True
+        },
+        {
+            "name": "Dr. Sarah Williams",
+            "specialty": "Pediatrics",
+            "experience": "14 years",
+            "languages": ["English", "French"],
+            "accepting_new_patients": True
+        },
+        {
+            "name": "Dr. Mohammed Ahmed",
+            "specialty": "Internal Medicine",
+            "experience": "22 years",
+            "languages": ["English", "Arabic", "Urdu"],
+            "accepting_new_patients": True
+        },
+        {
+            "name": "Dr. Fatima Al Mansoori",
+            "specialty": "Oncology",
+            "experience": "16 years",
+            "languages": ["English", "Arabic"],
+            "accepting_new_patients": True
         }
     ],
     "services": [
-        "Primary Care",
-        "Cardiology Consultations",
-        "Pediatric Care",
-        "Annual Physical Exams",
-        "Lab Work & Blood Tests",
-        "Vaccinations & Immunizations",
-        "Chronic Disease Management",
-        "Preventive Care",
-        "Minor Procedures"
+        "Heart & Vascular Institute",
+        "Digestive Disease & Surgery Institute",
+        "Neurological Institute",
+        "Eye Institute",
+        "Cancer Center",
+        "Emergency Services (24/7)",
+        "Women's Health",
+        "Pediatrics & Children's Services",
+        "Orthopedic & Rheumatology",
+        "Advanced Diagnostic Imaging",
+        "Laboratory Services",
+        "Executive Health Program"
     ],
     "location": {
-        "address": "123 Medical Plaza, Suite 400",
-        "city": "Downtown",
-        "state": "CA",
-        "zip": "90001",
-        "parking": "Free parking in building garage",
-        "accessibility": "Wheelchair accessible, elevator available"
+        "address": "Al Maryah Island",
+        "city": "Abu Dhabi",
+        "state": "UAE",
+        "zip": "PO Box 112412",
+        "parking": "Valet parking and multi-level parking available",
+        "accessibility": "Fully wheelchair accessible with dedicated facilities"
     },
     "contact": {
-        "phone": "(555) 123-0123",
-        "fax": "(555) 123-0124",
-        "email": "info@clinic.example.com",
-        "emergency": "Call 911 or go to nearest ER"
+        "phone": "+971 2 501 9999",
+        "fax": "+971 2 501 9888",
+        "email": "info@clevelandclinicabudhabi.ae",
+        "emergency": "Emergency Department: +971 2 501 9999 (24/7)"
     }
 }
 
