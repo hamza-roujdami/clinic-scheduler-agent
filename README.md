@@ -3,7 +3,7 @@
 > **⚠️ Demo Purpose Only**  
 > This is a **proof-of-concept demonstration** showcasing multi-agent architecture with Microsoft Agent Framework and Microsoft Foundry. It is **not production-ready code** and uses mock data for testing purposes. For production deployment, replace mock implementations with real APIs, add proper error handling, security measures, and scalability considerations.
 
-Multi-agent system for **Cleveland Clinic Abu Dhabi** appointment scheduling using **Microsoft Agent Framework** and **Azure Foundry**.
+Multi-agent system for **Abu Dhabi Clinic** appointment scheduling using **Microsoft Agent Framework** and **Azure Foundry**.
 
 ## Architecture
 
@@ -75,7 +75,7 @@ What are your clinic hours?
 Do you accept Daman insurance?
 I need to see a cardiologist who speaks Arabic
 What services do you offer?
-Where is Cleveland Clinic Abu Dhabi located?
+Where is the clinic located?
 ```
 
 ### Simple Booking Queries (→ Booking Agent only)

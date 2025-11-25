@@ -26,7 +26,7 @@ CLINIC_INFO_DB = {
         "holidays": "Open on public holidays with modified hours"
     },
     "insurance": [
-        "ADNIC (Abu Dhabi National Insurance Company)",
+        "ADNIC",
         "Daman",
         "AXA Gulf",
         "Oman Insurance Company",
@@ -90,7 +90,7 @@ CLINIC_INFO_DB = {
     "contact": {
         "phone": "+971 2 501 9999",
         "fax": "+971 2 501 9888",
-        "email": "info@clevelandclinicabudhabi.ae",
+        "email": "info@abudhabiclinic.ae",
         "emergency": "Emergency Department: +971 2 501 9999 (24/7)"
     }
 }

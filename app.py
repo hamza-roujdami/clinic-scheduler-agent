@@ -37,7 +37,7 @@ def chat_wrapper(message: str, history: list) -> str:
 
 demo = gr.ChatInterface(
     fn=chat_wrapper,
-    title="🏥 Cleveland Clinic Abu Dhabi - AI Assistant",
+    title="🏥 Abu Dhabi Clinic - AI Assistant",
     description=(
         "**Ask me about:**\n\n"
         "📋 **Information** - hours, doctors, insurance, services, location\n\n"
