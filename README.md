@@ -1,5 +1,8 @@
 # Clinic Scheduler Agent
 
+> **⚠️ Demo Purpose Only**  
+> This is a **proof-of-concept demonstration** showcasing multi-agent architecture with Microsoft Agent Framework and Azure Foundry. It is **not production-ready code** and uses mock data for testing purposes. For production deployment, replace mock implementations with real APIs, add proper error handling, security measures, and scalability considerations.
+
 Multi-agent system for clinic appointment scheduling using **Microsoft Agent Framework** and **Azure Foundry**.
 
 ## Architecture
