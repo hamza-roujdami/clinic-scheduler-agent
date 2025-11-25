@@ -86,18 +86,24 @@ Cancel my appointment #CONF12345
 I need to reschedule my appointment
 ```
 
+### Full Booking Flow Test (Sequential Steps)
+Try this to experience the complete 5-step booking workflow:
+```
+I want to book an appointment with Dr. Ahmed
+```
+
+The booking agent will guide you through:
+1. **Emirates ID verification** - Provide last 5 digits (e.g., "12345")
+2. **Phone verification** - Provide UAE number (e.g., "+971501234567")
+3. **Availability check** - Choose date (e.g., "2025-11-26")
+4. **Patient details** - Provide name and reason for visit
+5. **Confirmation** - Receive appointment confirmation code
+
 ### Complex Queries (→ Both agents)
 ```
 Do you accept ADNIC insurance and can I book for Sunday?
 I need a cardiologist, do you accept Daman and can I schedule this week?
 What are your hours and book me with Dr. Al Blooshi for Thursday
-```
-
-### Greeting (→ Welcome message)
-```
-Hello
-Hi there
-Help
 ```
 
 ## Project Structure

@@ -79,6 +79,28 @@ def _parse_slot_id(slot_id: str):
     return date, doctor_key, normalized_time
 
 
+def validate_emirates_id(
+    last_5_digits: Annotated[str, Field(description="Last 5 digits of Emirates ID")]
+) -> str:
+    """Validates Emirates ID (mock implementation for demo)."""
+    # Mock validation - in production, call MCP tool
+    if len(last_5_digits) == 5 and last_5_digits.isdigit():
+        if last_5_digits == "00000":
+            return "✕ Emirates ID not found in system. Please verify and try again."
+        return f"✓ Emirates ID verified (ending in {last_5_digits})"
+    return "✕ Invalid format. Please provide exactly 5 digits."
+
+
+def verify_phone_number(
+    phone: Annotated[str, Field(description="Patient phone number with country code")]
+) -> str:
+    """Verifies phone number (mock implementation for demo)."""
+    # Mock validation - in production, call MCP tool
+    if phone.startswith("+971") and len(phone) >= 12:
+        return f"✓ Phone number {phone} verified. SMS confirmation will be sent."
+    return "✕ Invalid UAE phone number. Format: +971XXXXXXXXX"
+
+
 def check_availability(
     date: Annotated[str, Field(description="Date in YYYY-MM-DD format")],
     doctor: Annotated[str, Field(description="Doctor name or specialty")]
@@ -210,20 +232,44 @@ def create_booking_agent():
         base_url=api_base if api_base else None
     )
     
-    # Create ChatAgent with 4 appointment management tools
-    # The LLM will automatically choose which tool to call
+    # Create ChatAgent with sequential booking workflow enforced via instructions
+    # This is Option 1: Prompt-level enforcement (vs Option 2: Framework-level with SequentialBuilder)
     agent = ChatAgent(
         chat_client=chat_client,
         name="ClinicBookingAgent",
         instructions=(
-            "You manage clinic appointments. You can:\n"
-            "• Check availability (date + doctor needed)\n"
-            "• Book appointments (date, patient name, reason needed)\n"
-            "• Cancel appointments (confirmation number needed)\n"
-            "• Reschedule appointments (confirmation + new date needed)\n\n"
-            "Always confirm details before booking. Be friendly."
+            "You manage clinic appointments following this MANDATORY sequence for NEW bookings:\n\n"
+            "**Step 1: Verify Identity**\n"
+            "- Ask for Emirates ID last 5 digits\n"
+            "- Call validate_emirates_id(last_5_digits)\n"
+            "- If invalid, stop and ask again\n\n"
+            "**Step 2: Verify Contact**\n"
+            "- Ask for phone number\n"
+            "- Call verify_phone_number(phone)\n"
+            "- If invalid, stop and ask again\n\n"
+            "**Step 3: Check Availability**\n"
+            "- Ask for preferred date and doctor\n"
+            "- Call check_availability(date, doctor)\n"
+            "- Show available slots to patient\n\n"
+            "**Step 4: Confirm Booking**\n"
+            "- Ask patient to choose a slot\n"
+            "- Ask for patient name and reason for visit\n"
+            "- Confirm all details with patient\n"
+            "- Call book_appointment(slot_id, patient_name, reason)\n\n"
+            "**IMPORTANT RULES:**\n"
+            "- NEVER skip steps for new bookings\n"
+            "- ALWAYS follow the order above\n"
+            "- For cancellations/reschedules, you can use those tools directly\n"
+            "- Be friendly and professional at all times"
         ),
-        tools=[check_availability, book_appointment, cancel_appointment, reschedule_appointment]
+        tools=[
+            validate_emirates_id,
+            verify_phone_number,
+            check_availability,
+            book_appointment,
+            cancel_appointment,
+            reschedule_appointment
+        ]
     )
     
     return agent
