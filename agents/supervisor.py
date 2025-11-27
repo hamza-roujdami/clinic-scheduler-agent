@@ -25,6 +25,7 @@ class SupervisorWorkflow:
         print("🔧 Initializing Supervisor Workflow...")
         
         # Track pending requests for multi-turn conversations
+        # Note: This is workflow-level state tracking, separate from agent memory
         self.pending_requests = []
         
         # Connect to Azure OpenAI
@@ -38,6 +39,8 @@ class SupervisorWorkflow:
         )
         
         # Create the coordinator that triages requests
+        # Memory: Uses MAF's default in-memory ChatMessageStore for conversation history
+        # See: https://learn.microsoft.com/en-us/agent-framework/user-guide/agents/agent-memory
         self.coordinator = chat_client.create_agent(
             instructions=(
                 "You are frontline clinic support triage. Read the user's request and decide whether "
@@ -51,6 +54,7 @@ class SupervisorWorkflow:
         )
         
         # Specialist for answering clinic info questions (with RAG tool)
+        # Memory: In-memory conversation history maintained automatically by MAF
         self.rag_agent = chat_client.create_agent(
             instructions=(
                 "You handle information queries about the clinic. "
@@ -101,80 +105,48 @@ class SupervisorWorkflow:
     
     async def route(self, user_message: str) -> str:
         """Send user message through workflow and return the response"""
-        print(f"📨 User: {user_message}")
+        print(f"\n💬 User: {user_message}")
         
         # Check if we have pending requests (multi-turn conversation)
         if self.pending_requests:
-            # Send response to pending requests
             responses = {req.request_id: user_message for req in self.pending_requests}
-            self.pending_requests = []  # Clear pending requests
+            self.pending_requests = []
             events = [event async for event in self.workflow.send_responses_streaming(responses)]
         else:
-            # Start new workflow run
             events = [event async for event in self.workflow.run_stream(user_message)]
         
-        # Track which agents were active
-        active_agents = []
-        tool_calls = []
+        # Track routing and tools
+        handoff_target = None
+        tools_used = []
         
-        # Log what's happening
+        # Process events
         for event in events:
             event_name = type(event).__name__
             
-            if isinstance(event, WorkflowStatusEvent):
-                print(f"🔄 {event.state.name}")
-            
             # Capture pending requests for multi-turn conversations
-            elif isinstance(event, RequestInfoEvent):
+            if isinstance(event, RequestInfoEvent):
                 self.pending_requests.append(event)
             
-            # Check for tool calls in agent updates
+            # Track agent handoffs and tool calls
             elif event_name == "AgentRunUpdateEvent":
-                # Check for function calls and results in contents
                 if hasattr(event, 'data') and hasattr(event.data, 'contents'):
                     contents = event.data.contents
                     
-                    # Look for function calls
-                    function_calls = [c for c in contents if isinstance(c, FunctionCallContent)]
-                    for call in function_calls:
-                        # Only print complete tool calls (not streaming fragments)
-                        if call.name and not call.name.startswith('('):
-                            import json
-                            args_str = json.dumps(call.arguments) if isinstance(call.arguments, dict) else str(call.arguments)
-                            print(f"   🔧 TOOL CALL: {call.name}({args_str})")
-                            tool_calls.append(f"🔧 {call.name}")
-                    
-                    # Look for function results
-                    function_results = [c for c in contents if isinstance(c, FunctionResultContent)]
-                    for result in function_results:
-                        result_preview = str(result.result)[:100] if result.result else "None"
-                        print(f"   ✅ TOOL RESULT: {result_preview}...")
-                        tool_calls.append(f"✅ Result received")
-                
-            elif isinstance(event, WorkflowOutputEvent):
-                print(f"✅ Workflow completed")
-                
-                # Show tool calls if any
-                if tool_calls:
-                    for tc in tool_calls:
-                        print(f"   {tc}")
-                
-                if isinstance(event.data, list):
-                    # Show conversation flow
-                    for msg in event.data:
-                        if hasattr(msg, 'author_name') and msg.author_name:
-                            if msg.author_name not in active_agents:
-                                active_agents.append(msg.author_name)
-                    
-                    # Show which agents participated
-                    if len(active_agents) > 1:
-                        print(f"   🔀 Routing: {' → '.join(active_agents)}")
-                    
-                    # Show last few messages
-                    for i, msg in enumerate(event.data[-3:]):
-                        if hasattr(msg, 'author_name') and hasattr(msg, 'text'):
-                            text = msg.text[:80] if msg.text else ""
-                            print(f"   [{i}] {msg.author_name}: {text}...")
+                    # Detect handoff calls
+                    for call in [c for c in contents if isinstance(c, FunctionCallContent)]:
+                        if call.name and call.name.startswith('handoff_to_'):
+                            handoff_target = call.name.replace('handoff_to_', '').replace('_', ' ').title()
+                        elif call.name and not call.name.startswith('('):
+                            tools_used.append(call.name)
+        
+        # Clean output
+        if handoff_target:
+            print(f"🎯 Coordinator → {handoff_target}")
+        
+        if tools_used:
+            print(f"🔧 Tools: {', '.join(tools_used)}")
+        
+        print()
         
         # Extract the final response
         return self._extract_response(events)
