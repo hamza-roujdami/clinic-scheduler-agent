@@ -6,11 +6,30 @@ Run with: python app.py
 import asyncio
 import gradio as gr
 from dotenv import load_dotenv
+import threading
 
 load_dotenv()
 
 # Lazy-load supervisor to avoid slow startup
 _supervisor = None
+_event_loop = None
+_loop_thread = None
+
+
+def get_event_loop():
+    """Get or create persistent event loop running in background thread."""
+    global _event_loop, _loop_thread
+    if _event_loop is None:
+        _event_loop = asyncio.new_event_loop()
+        
+        def run_loop():
+            asyncio.set_event_loop(_event_loop)
+            _event_loop.run_forever()
+        
+        _loop_thread = threading.Thread(target=run_loop, daemon=True)
+        _loop_thread.start()
+    
+    return _event_loop
 
 
 def get_supervisor():
@@ -31,8 +50,10 @@ async def chat(message: str, history: list) -> str:
 
 
 def chat_wrapper(message: str, history: list) -> str:
-    """Wrapper to run async chat function in sync context."""
-    return asyncio.run(chat(message, history))
+    """Wrapper to run async chat function in persistent event loop."""
+    loop = get_event_loop()
+    future = asyncio.run_coroutine_threadsafe(chat(message, history), loop)
+    return future.result()
 
 
 demo = gr.ChatInterface(
@@ -45,10 +66,13 @@ demo = gr.ChatInterface(
     ),
     examples=[
         "What are your clinic hours?",
+        "Who are your doctors?",
         "Do you accept Daman insurance?",
-        "I need to see a cardiologist who speaks Arabic",
-        "Book an appointment with Dr. Al Blooshi",
-        "Do you accept ADNIC and can I book for Sunday?"
+        "What services do you offer?",
+        "I want to book an appointment with Dr. Ahmed",
+        "Check availability for Dr. Sarah",
+        "Cancel my appointment",
+        "Hello"
     ]
 )
 

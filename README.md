@@ -1,27 +1,35 @@
 # Clinic Scheduler Agent
 
 > **⚠️ Demo Purpose Only**  
-> This is a **proof-of-concept demonstration** showcasing multi-agent architecture with Microsoft Agent Framework and Microsoft Foundry. It is **not production-ready code** and uses mock data for testing purposes. For production deployment, replace mock implementations with real APIs, add proper error handling, security measures, and scalability considerations.
+> This is a **proof-of-concept demonstration** showcasing multi-agent architecture with Microsoft Agent Framework and Azure Foundry. It is **not production-ready code** and uses mock data for testing purposes. For production deployment, replace mock implementations with real APIs, add proper error handling, security measures, and scalability considerations.
 
-Multi-agent system for **Abu Dhabi Clinic** appointment scheduling using **Microsoft Agent Framework** and **Azure Foundry**.
+Multi-agent system for **Abu Dhabi Clinic** appointment scheduling using **Microsoft Agent Framework** with **HandoffBuilder** orchestration pattern.
 
 ![App UI](docs/app-ui.png)
 
 ## Architecture
 
+**HandoffBuilder Pattern** (Single-tier specialist routing):
+
 ```
-User Message → Supervisor Agent (LLM routing)
-                    ↓
-        ┌───────────┴───────────┐
-        ↓                       ↓
-    RAG Agent              Booking Agent
-  (Info queries)         (Appointments)
+User → Coordinator Agent (triage & route)
+              ↓
+    ┌─────────┴─────────┐
+    ↓                   ↓
+RAG Agent          Booking Agent
+(1 tool)           (6 tools)
 ```
 
 **3 Agents:**
-- **Supervisor**: Uses LLM to classify intent and route to appropriate agent(s)
-- **RAG Agent**: Answers questions about hours, doctors, insurance, services, location
-- **Booking Agent**: Handles check availability, book, cancel, reschedule
+- **Coordinator Agent**: Triages requests and routes to specialists using auto-generated handoff tools
+- **RAG Agent**: Handles clinic info queries using `get_clinic_info` tool (mocked, will use Azure AI Search)
+- **Booking Agent**: Handles appointments using 6 tools (mocked, will use Booking API + Emirates ID MCP servers)
+
+**Key Features:**
+- ✅ HandoffBuilder orchestration (coordinator → specialists)
+- ✅ Tool calls visible in terminal logs
+- ✅ Mocked tools ready for MCP server integration
+- ✅ Azure Foundry with DefaultAzureCredential
 
 ## Setup
 
@@ -37,8 +45,11 @@ User Message → Supervisor Agent (LLM routing)
 python -m venv .venv
 source .venv/bin/activate  # Windows: .venv\Scripts\activate
 
-# Install dependencies
-pip install -r requirements.txt --pre
+# Install Microsoft Agent Framework from GitHub (includes HandoffBuilder)
+pip install git+https://github.com/microsoft/agent-framework.git@main#subdirectory=python/packages/core
+
+# Install other dependencies
+pip install -r requirements.txt
 
 # Configure .env file (see .env.example)
 cp .env.example .env
@@ -57,35 +68,42 @@ python app.py
 ### Run Tests
 
 ```bash
-# Test supervisor routing
+# Test supervisor with HandoffBuilder workflow
 python agents/supervisor.py
 
-# Test RAG agent
-python agents/rag_agent.py
-
-# Test booking agent
-python agents/booking_agent.py
+# Watch terminal for tool call logs:
+# 🔧 TOOL CALL: handoff_to_rag_agent()
+# 🔧 TOOL CALL: get_clinic_info()
+# ✅ TOOL RESULT: [clinic data]
 ```
 
 ## Demo Prompts
 
 Try these prompts in the web UI to see the routing in action:
 
-### Simple Info Queries (→ RAG Agent only)
+### Info Queries (→ Coordinator → RAG Agent)
 ```
 What are your clinic hours?
 Do you accept Daman insurance?
-I need to see a cardiologist who speaks Arabic
+Who are your doctors?
 What services do you offer?
 Where is the clinic located?
 ```
 
-### Simple Booking Queries (→ Booking Agent only)
+**Terminal Output:**
 ```
-Book an appointment with Dr. Smith
-Check availability for tomorrow
-Cancel my appointment #CONF12345
-I need to reschedule my appointment
+🔧 TOOL CALL: handoff_to_rag_agent()
+✅ TOOL RESULT: {'handoff_to': 'rag_agent'}
+🔧 TOOL CALL: get_clinic_info()
+✅ TOOL RESULT: **Abu Dhabi Clinic**...
+```
+
+### Booking Queries (→ Coordinator → Booking Agent)
+```
+I want to book an appointment
+Check availability for Dr. Ahmed
+Cancel confirmation code ABC123
+Reschedule my appointment
 ```
 
 ### Full Booking Flow Test (Sequential Steps)
@@ -101,45 +119,75 @@ The booking agent will guide you through:
 4. **Patient details** - Provide name and reason for visit
 5. **Confirmation** - Receive appointment confirmation code
 
-### Complex Queries (→ Both agents)
+### Greetings (→ Coordinator only)
 ```
-Do you accept ADNIC insurance and can I book for Sunday?
-I need a cardiologist, do you accept Daman and can I schedule this week?
-What are your hours and book me with Dr. Al Blooshi for Thursday
+Hello
+Hi there
+Good morning
 ```
+
+**Coordinator responds directly without handoff**
 
 ## Project Structure
 
 ```
 agents/
-  ├── supervisor.py      # LLM-powered routing
-  ├── rag_agent.py       # Clinic info (5 tools)
-  └── booking_agent.py   # Appointments (4 tools)
-.env                     # Azure Foundry config
-requirements.txt         # Dependencies
+  └── supervisor.py          # HandoffBuilder workflow (coordinator + 2 specialists)
+tools/
+  ├── rag_tools.py          # Mocked get_clinic_info (→ Azure AI Search)
+  └── booking_tools.py      # Mocked booking tools (→ MCP servers)
+app.py                      # Gradio web UI
+.env                        # Azure Foundry config
+requirements.txt            # Dependencies
 ```
 
 ## How It Works
 
-1. **User sends message** → Supervisor receives it
-2. **LLM classifies intent** → `{needs_info, needs_booking, is_greeting}`
-3. **Routing decision**:
-   - Info only → RAG Agent
-   - Booking only → Booking Agent  
-   - Both → Call both agents
-   - Greeting → Welcome message
-4. **Agent(s) use tools** → LLM calls appropriate functions
-5. **Response returned** → User gets answer
+**HandoffBuilder Workflow:**
+
+1. **User message** → Coordinator agent receives it
+2. **Coordinator decides** → Calls handoff tool (auto-generated by HandoffBuilder):
+   - `handoff_to_rag_agent()` for info queries
+   - `handoff_to_booking_agent()` for appointments
+   - Or responds directly for greetings
+3. **Specialist agent** → Receives the conversation context
+4. **Specialist uses tools** → Calls custom tools:
+   - RAG Agent: `get_clinic_info(query)`
+   - Booking Agent: `validate_emirates_id()`, `book_appointment()`, etc.
+5. **Tool result** → Specialist uses result to answer user
+6. **Workflow terminates** → Returns to user (after 2+ non-user messages)
+
+**Key Pattern:** `chat_client.create_agent(tools=[...])` is required for tools to work in HandoffBuilder workflows.
 
 ## Next Steps
 
-- [ ] Replace mock booking tools with real API
-- [ ] Add Azure AI Search for RAG
+- [ ] Replace `tools/rag_tools.py` with **Azure AI Search** integration
+- [ ] Replace `tools/booking_tools.py` with **Booking API MCP Server**
+- [ ] Add **Emirates ID Verification MCP Server**
 - [ ] Add conversation history/threading
 - [ ] Build WhatsApp interface
 - [ ] Deploy to production
 
+## Technical Notes
+
+**Why HandoffBuilder?**
+- Single-tier routing (coordinator → specialists)
+- Auto-generates handoff tools (no manual tool definitions needed)
+- Clean separation: routing logic vs domain logic
+- Termination conditions built-in
+
+**Tool Integration:**
+- ✅ Use `chat_client.create_agent(tools=[...])` for specialists
+- ❌ Don't use `ChatAgent(tools=[...])` directly - tools won't be called
+- Tool calls are logged via `FunctionCallContent` and `FunctionResultContent` in `AgentRunUpdateEvent`
+
+**Current Limitations:**
+- Termination after 2 non-user messages (can be adjusted)
+- No conversation history between sessions
+- Mock data only (not production-ready)
+
 ## Resources
 
 - [Microsoft Agent Framework Documentation](https://learn.microsoft.com/en-us/agent-framework/overview/agent-framework-overview)
+- [HandoffBuilder Guide](https://learn.microsoft.com/en-us/agent-framework/user-guide/workflows/orchestrations/handoff)
 - [Microsoft Agent Framework GitHub](https://github.com/microsoft/agent-framework)
