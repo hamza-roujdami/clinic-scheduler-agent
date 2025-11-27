@@ -1,7 +1,7 @@
 # Clinic Scheduler Agent
 
 > **⚠️ Demo Purpose Only**  
-> This is a **proof-of-concept demonstration** showcasing multi-agent architecture with Microsoft Agent Framework and Azure Foundry. It is **not production-ready code** and uses mock data for testing purposes. For production deployment, replace mock implementations with real APIs, add proper error handling, security measures, and scalability considerations.
+> This is a **proof-of-concept demonstration** showcasing multi-agent architecture with Microsoft Agent Framework and Foundry. It is **not production-ready code** and uses mock data for testing purposes. 
 
 Multi-agent system for **Abu Dhabi Clinic** appointment scheduling using **Microsoft Agent Framework** with **HandoffBuilder** orchestration pattern.
 
@@ -24,12 +24,6 @@ RAG Agent          Booking Agent
 - **Coordinator Agent**: Triages requests and routes to specialists using auto-generated handoff tools
 - **RAG Agent**: Handles clinic info queries using `get_clinic_info` tool (mocked, will use Azure AI Search)
 - **Booking Agent**: Handles appointments using 6 tools (mocked, will use Booking API + Emirates ID MCP servers)
-
-**Key Features:**
-- ✅ HandoffBuilder orchestration (coordinator → specialists)
-- ✅ Tool calls visible in terminal logs
-- ✅ Mocked tools ready for MCP server integration
-- ✅ Azure Foundry with DefaultAzureCredential
 
 ## Setup
 
@@ -71,10 +65,6 @@ python app.py
 # Test supervisor with HandoffBuilder workflow
 python agents/supervisor.py
 
-# Watch terminal for tool call logs:
-# 🔧 TOOL CALL: handoff_to_rag_agent()
-# 🔧 TOOL CALL: get_clinic_info()
-# ✅ TOOL RESULT: [clinic data]
 ```
 
 ## Demo Prompts
@@ -88,14 +78,6 @@ Do you accept Daman insurance?
 Who are your doctors?
 What services do you offer?
 Where is the clinic located?
-```
-
-**Terminal Output:**
-```
-🔧 TOOL CALL: handoff_to_rag_agent()
-✅ TOOL RESULT: {'handoff_to': 'rag_agent'}
-🔧 TOOL CALL: get_clinic_info()
-✅ TOOL RESULT: **Abu Dhabi Clinic**...
 ```
 
 ### Booking Queries (→ Coordinator → Booking Agent)
@@ -180,11 +162,6 @@ requirements.txt            # Dependencies
 - ✅ Use `chat_client.create_agent(tools=[...])` for specialists
 - ❌ Don't use `ChatAgent(tools=[...])` directly - tools won't be called
 - Tool calls are logged via `FunctionCallContent` and `FunctionResultContent` in `AgentRunUpdateEvent`
-
-**Current Limitations:**
-- Termination after 2 non-user messages (can be adjusted)
-- No conversation history between sessions
-- Mock data only (not production-ready)
 
 ## Resources
 
