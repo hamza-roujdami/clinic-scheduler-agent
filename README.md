@@ -3,7 +3,7 @@
 > **⚠️ Demo Purpose Only**  
 > This is a **proof-of-concept demonstration** showcasing multi-agent architecture with Microsoft Agent Framework and Foundry. It is **not production-ready code** and uses mock data for testing purposes. 
 
-Multi-agent system for **Abu Dhabi Clinic** appointment scheduling using **Microsoft Agent Framework** with **HandoffBuilder** orchestration pattern.
+Multi-agent system for clinic appointment scheduling using **Microsoft Agent Framework** with **HandoffBuilder** orchestration pattern.
 
 ![App UI](docs/app-ui.png)
 
@@ -140,15 +140,6 @@ requirements.txt            # Dependencies
 6. **Workflow terminates** → Returns to user (after 2+ non-user messages)
 
 **Key Pattern:** `chat_client.create_agent(tools=[...])` is required for tools to work in HandoffBuilder workflows.
-
-## Next Steps
-
-- [ ] Replace `tools/rag_tools.py` with **Azure AI Search** integration
-- [ ] Replace `tools/booking_tools.py` with **Booking API MCP Server**
-- [ ] Add **Emirates ID Verification MCP Server**
-- [ ] Add conversation history/threading
-- [ ] Build WhatsApp interface
-- [ ] Deploy to production
 
 ## Technical Notes
 
